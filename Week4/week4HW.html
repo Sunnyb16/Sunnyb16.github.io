@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Product Cards</title>
+  <style>
+    :root {
+      font-size: 16px;
+      --bg: #f4eef6;
+      --card-bg: #ffffff;
+      --nav-bg: #2b1538;
+      --accent: #c77dff;
+      --accent2: #ff8fab;
+      --text: #1f1f1f;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      --radius: 1.25rem;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: nowrap;
+    }
+
+    .nav-links button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 999px;
+      background: white;
+      color: var(--nav-bg);
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-links button:hover {
+      transform: translateY(-2px);
+      background: var(--accent2);
+      color: white;
+    }
+
+    .page-title {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      font-size: 2rem;
+    }
+
+    .grid-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 30rem;
+    }
+
+    .card img {
+      width: 100%;
+      height: 16rem;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      padding: 1.5rem;
+      gap: 1rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .card h2 {
+      font-size: 1.75rem;
+    }
+
+    .card p {
+      font-size: 1rem;
+      max-width: 30rem;
+    }
+
+    .features {
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    .features li {
+      margin-bottom: 0.5rem;
+    }
+
+    .card-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: auto;
+    }
+
+    .card-buttons button {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 0.75rem;
+      background: var(--accent);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .card-buttons button:hover {
+      background: var(--accent2);
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        font-size: 12px;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+      }
+
+      .nav-links button {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+      }
+
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-height: 100vh;
+      }
+
+      .card img {
+        height: 18rem;
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="nav-links">
+      <button>Home</button>
+      <button>Shop</button>
+      <button>About</button>
+      <button>Contact</button>
+    </div>
+  </header>
+
+  <h1 class="page-title">Featured Product Cards</h1>
+
+  <main class="grid-container">
+    <section class="card">
+      <img src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d" alt="Dog product" />
+      <div class="card-content">
+        <h2>Cozy Pet Bed</h2>
+        <p>A soft and stylish bed designed to keep your pet comfortable all day long.</p>
+        <ul class="features">
+          <li>Ultra-soft material</li>
+          <li>Machine washable</li>
+          <li>Available in 3 sizes</li>
+        </ul>
+        <div class="card-buttons">
+          <button>Buy Now</button>
+          <button>Details</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Shoes" />
+      <div class="card-content">
+        <h2>Running Sneakers</h2>
+        <p>Lightweight shoes built for comfort, speed, and everyday wear.</p>
+        <ul class="features">
+          <li>Breathable mesh</li>
+          <li>Flexible sole</li>
+          <li>Modern design</li>
+        </ul>
+        <div class="card-buttons">
+          <button>Buy Now</button>
+          <button>Details</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9" alt="Phone" />
+      <div class="card-content">
+        <h2>Smartphone Pro</h2>
+        <p>A sleek phone with a sharp display, strong battery, and fast performance.</p>
+        <ul class="features">
+          <li>128GB storage</li>
+          <li>All-day battery</li>
+          <li>High-resolution camera</li>
+        </ul>
+        <div class="card-buttons">
+          <button>Buy Now</button>
+          <button>Details</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e" alt="Headphones" />
+      <div class="card-content">
+        <h2>Wireless Headphones</h2>
+        <p>Enjoy clear sound and a comfortable fit whether you study, work, or relax.</p>
+        <ul class="features">
+          <li>Noise reduction</li>
+          <li>Bluetooth connection</li>
+          <li>Long battery life</li>
+        </ul>
+        <div class="card-buttons">
+          <button>Buy Now</button>
+          <button>Details</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
