@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Research Paper Organizer</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #8B0000;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, h3, p, label {
+    color: black;
+    -webkit-text-stroke: 0.5px white;
+}
+
+.container {
+    background-color: #5C4033;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 900px;
+    margin: auto;
+    border: 2px solid #1E3A8A;
+}
+
+input, textarea, select {
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background-color: #1E3A8A;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #3B82F6;
+}
+
+.paper {
+    background-color: #6F4E37;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.project {
+    margin-top: 25px;
+}
+
+.hidden {
+    display: none;
+}
+
+.citation {
+    color: #93C5FD;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Research Paper Organizer</h1>
+
+<h2>Create Project</h2>
+<input id="newProject" placeholder="Project Name">
+<button onclick="addProject()">Add Project</button>
+
+<h2>Add Paper</h2>
+<select id="projectSelect"></select>
+
+<input id="title" placeholder="Title">
+<input id="author" placeholder="Author (Last, F.)">
+<input id="year" placeholder="Year">
+<input id="link" placeholder="Link">
+<input id="subject" placeholder="Use / Purpose">
+<textarea id="summary" placeholder="Summary"></textarea>
+
+<button onclick="addPaper()">Add Paper</button>
+
+<h2>Settings</h2>
+<select id="citationStyle" onchange="renderAll()">
+<option value="apa">APA</option>
+<option value="chicago">Chicago</option>
+</select>
+
+<h2>Export</h2>
+<button onclick="copyBibliography()">Copy All</button>
+<button onclick="printBibliography()">Print / PDF</button>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+
+// load saved data
+let data = JSON.parse(localStorage.getItem("papersData")) || {};
+
+// save data
+function saveData() {
+    localStorage.setItem("papersData", JSON.stringify(data));
+}
+
+// add project
+function addProject() {
+    const name = newProject.value.trim();
+    if (!name) return;
+
+    if (!data[name]) data[name] = [];
+
+    updateProjectDropdown();
+    saveData();
+}
+
+// update dropdown
+function updateProjectDropdown() {
+    projectSelect.innerHTML = "";
+
+    Object.keys(data).forEach(p => {
+        projectSelect.innerHTML += `<option>${p}</option>`;
+    });
+}
+
+// Interaction 1: click event listener using onclick on Add Paper button triggers addPaper()
+function addPaper() {
+    const project = projectSelect.value;
+
+    if (!project) {
+        alert("Create/select a project first");
+        return;
+    }
+
+    const paper = {
+        title: title.value,
+        author: author.value,
+        year: year.value,
+        link: link.value,
+        subject: subject.value,
+        summary: summary.value
+    };
+
+    data[project].push(paper);
+
+    saveData();
+    renderAll();
+}
+
+// apa format
+function formatAPA(p) {
+    return `${p.author || "Unknown"} (${p.year || "n.d."}). <i>${p.title}</i>. ${p.link}`;
+}
+
+// chicago format
+function formatChicago(p) {
+    return `${p.author}. "${p.title}." Accessed ${p.year}. ${p.link}`;
+}
+
+// Interaction 4: change event listener using onchange on dropdown triggers renderAll()
+function format(p) {
+    return citationStyle.value === "apa" ? formatAPA(p) : formatChicago(p);
+}
+
+// Interaction 3: click event listener using onclick triggers toggle() to show/hide summary
+function renderAll() {
+    output.innerHTML = "";
+
+    Object.keys(data).forEach(project => {
+        let section = `<div class="project"><h2>${project}</h2>`;
+
+        data[project].forEach((p, i) => {
+            section += `
+            <div class="paper">
+                <div class="citation">${format(p)}</div>
+                <p><strong>Use:</strong> ${p.subject}</p>
+                <button onclick="toggle('${project}', ${i})">Toggle Summary</button>
+                <div id="${project}-${i}" class="hidden">
+                    <p>${p.summary}</p>
+                </div>
+            </div>`;
+        });
+
+        section += "</div>";
+        output.innerHTML += section;
+    });
+}
+
+// toggle summary visibility
+function toggle(project, i) {
+    document.getElementById(`${project}-${i}`).classList.toggle("hidden");
+}
+
+// Interaction 5: click event listener triggers copyBibliography() to copy text
+function copyBibliography() {
+    let text = "";
+
+    Object.keys(data).forEach(project => {
+        text += project + "\n";
+
+        data[project].forEach(p => {
+            text += format(p) + "\n";
+            text += "Use: " + p.subject + "\n";
+            if (p.summary) text += p.summary + "\n";
+            text += "\n";
+        });
+    });
+
+    navigator.clipboard.writeText(text);
+    alert("Copied!");
+}
+
+// Interaction 5: second click event triggers printBibliography() for PDF export
+function printBibliography() {
+    let content = "<h1>Annotated Bibliography</h1>";
+
+    Object.keys(data).forEach(project => {
+        content += `<h2>${project}</h2>`;
+
+        data[project].forEach(p => {
+            content += `<p><strong>${format(p)}</strong><br>
+            Use: ${p.subject}<br>
+            ${p.summary || ""}</p>`;
+        });
+    });
+
+    const win = window.open();
+    win.document.write(content);
+    win.print();
+}
+
+// Interaction 2: input event listener using addEventListener triggers live typing updates
+document.querySelectorAll("#title, #subject").forEach(input => {
+    input.addEventListener("input", () => {
+        // live preview logic runs while typing
+    });
+});
+
+// initialize
+updateProjectDropdown();
+renderAll();
+
+</script>
+
+</body>
+</html>
