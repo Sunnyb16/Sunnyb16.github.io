@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weekly Weather</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 15px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.day {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.temp {
+    margin: 5px 0;
+}
+
+.sun {
+    font-size: 12px;
+    color: gray;
+}
+
+/* MOBILE SCROLL */
+@media (max-width: 900px) {
+    .container {
+        display: flex;
+        overflow-x: auto;
+    }
+    .card {
+        min-width: 200px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>Weekly Weather</h1>
+
+<!-- IMPORTANT: ID must match JS -->
+<div class="container" id="weatherContainer"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    if (!navigator.geolocation) {
+        console.log("No geolocation → fallback");
+        fetchWeather(33.4255, -111.9400);
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            console.log("Location success");
+
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            fetchWeather(lat, lon);
+        },
+        (error) => {
+            console.log("Location failed → fallback", error);
+
+            // fallback prevents blank screen
+            fetchWeather(33.4255, -111.9400);
+        },
+        {
+            maximumAge: 0,
+            timeout: 10000,
+            enableHighAccuracy: true
+        }
+    );
+
+});
+
+function fetchWeather(lat, lon) {
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => displayWeather(data))
+        .catch(err => console.log("API error:", err));
+}
+
+function displayWeather(data) {
+
+    console.log("Display called");
+
+    if (!data || !data.daily) {
+        console.log("Invalid data");
+        return;
+    }
+
+    const container = document.getElementById("weatherContainer");
+
+    if (!container) {
+        console.log("Container missing");
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const days = data.daily.time || [];
+    const maxTemps = data.daily.temperature_2m_max || [];
+    const minTemps = data.daily.temperature_2m_min || [];
+    const sunrise = data.daily.sunrise || [];
+    const sunset = data.daily.sunset || [];
+
+    for (let i = 0; i < days.length; i++) {
+
+        if (!days[i]) continue;
+
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+            <div class="day">${new Date(days[i]).toDateString()}</div>
+            <div class="temp">High: ${maxTemps[i] ?? "N/A"}°C</div>
+            <div class="temp">Low: ${minTemps[i] ?? "N/A"}°C</div>
+            <div class="sun">🌅 ${formatTime(sunrise[i])}</div>
+            <div class="sun">🌇 ${formatTime(sunset[i])}</div>
+        `;
+
+        container.appendChild(card);
+    }
+}
+
+function formatTime(timeString) {
+    if (!timeString) return "N/A";
+
+    return new Date(timeString).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+</script>
+
+</body>
+</html>
